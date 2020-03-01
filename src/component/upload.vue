@@ -8,7 +8,7 @@
             multiple>
         <i class="el-icon-upload"/>
         <div class="el-upload__text">将文件拖到此处，或<em>点击选择</em></div>
-        <div class="el-upload__tip" slot="tip">在浏览器内对文件进行播放，无需消耗数据流量</div>
+        <div class="el-upload__tip" slot="tip">仅供学习与技术交流使用</div>
     </el-upload>
 </template>
 
