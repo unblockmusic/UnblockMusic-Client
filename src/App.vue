@@ -74,7 +74,6 @@
                 let updateInfo;
                 try {
                     const resp = await fetch("https://hxm108.github.io/app-version/app-ver.json", {
-                        body: JSON.stringify({ Version: this.version })
                     });
                     updateInfo = await resp.json();
                 } catch (e) {
