@@ -68,26 +68,9 @@
             });
         },
         methods: {
-            async finishLoad() {
+            finishLoad() {
                 const mask = document.getElementById("loader-mask");
                 if (!!mask) mask.remove();
-                let updateInfo;
-                try {
-                    const resp = await fetch("https://hxm108.github.io/app-version/app-ver.json", {
-                    });
-                    updateInfo = await resp.json();
-                } catch (e) {
-                }
-                if (!!updateInfo.Found) {
-                    this.$notify.warning({
-                        title: '欢迎使用',
-                        message: '最近更新内容：</br>' +
-                            '1. 优化UI</br>2. 新增 .wav .aac 支持',
-                        dangerouslyUseHTMLString: true,
-                        duration: 8000,
-                        position: 'top-left'
-                    });
-                } else {
                     this.$notify.success({
                         title: '欢迎使用',
                         message: '最近更新内容：</br>' +
