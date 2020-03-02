@@ -38,7 +38,7 @@
                     </el-switch>
                 </el-row>
             </el-row>
-            <audio :autoplay="playing_auto" :src="playing_url" controls></audio
+            <audio :autoplay="playing_auto" :src="playing_url" controls></audio>
 
             <x-preview :table-data="tableData" :download_format="download_format"
                        v-on:music_changed="changePlaying"></x-preview>
