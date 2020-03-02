@@ -5,20 +5,40 @@
             <x-upload v-on:handle_finish="showSuccess" v-on:handle_error="showFail"></x-upload>
 
             <el-row id="app-control">
-                <el-row style="padding-bottom: 1em; font-size: 14px">
-                    歌曲命名格式：
-                    <el-radio label="1" name="format" v-model="download_format">原文件</el-radio>
-                    <el-radio label="4" name="format" v-model="download_format">歌手-歌曲名</el-radio>
-                    <el-radio label="2" name="format" v-model="download_format">歌曲名-歌手</el-radio>
-                    <el-radio label="3" name="format" v-model="download_format">歌曲名</el-radio>
+                <el-row>
+                    <el-input style="width:360px;" placeholder="URL" v-model="playing_url" clearable prefix-icon="el-icon-link" autosize></el-input>
+                </el-row>
+                <el-row style="font-size:12px;color:gray;padding-bottom: 2em;padding-top:0.6em">
+                    播放URL地址
+                </el-row>
+                <el-row style="padding-bottom: 1em; font-size: 13px">
+                    下载格式：
+                    <el-radio-group v-model="download_format" name="format" size="small">
+                        <el-radio-button label="1">原文件</el-radio-button>
+                        <el-radio-button label="4">歌手-歌曲名</el-radio-button>
+                        <el-radio-button label="2">歌曲名-歌手</el-radio-button>
+                        <el-radio-button label="3">歌曲名</el-radio-button>
+                    </el-radio-group>
                 </el-row>
                 <el-row>
                     <el-button @click="handleDownloadAll" icon="el-icon-download" plain type="primary">下载全部</el-button>
-                    <el-button @click="handleDeleteAll" icon="el-icon-delete" plain type="danger">删除全部</el-button>
-                    <el-checkbox border style="margin-left: 1em" v-model="instant_download">立即保存</el-checkbox>
+                    <el-popover placement="bottom"
+                                width="160"
+                                v-model="confirm">
+                        <p>移除所有导入的文件吗？</p>
+                        <div style="text-align: right; margin: 0">
+                            <el-button size="mini" type="text" @click="confirm = false">取消</el-button>
+                            <el-button type="danger" size="mini" @click="handleDeleteAll">确定</el-button>
+                        </div>
+                        <el-button style="margin-left: 1em" slot="reference" icon="el-icon-delete" plain type="danger">删除全部</el-button>
+                    </el-popover>
+                    <el-switch style="margin-left: 1em" v-model="instant_download"
+                               active-color="#13ce66"
+                               active-text="立即保存">
+                    </el-switch>
                 </el-row>
             </el-row>
-            <audio :autoplay="playing_auto" :src="playing_url" controls />
+            <audio :autoplay="playing_auto" :src="playing_url" controls></audio
 
             <x-preview :table-data="tableData" :download_format="download_format"
                        v-on:music_changed="changePlaying"></x-preview>
@@ -32,12 +52,43 @@
                 <span>Copyright &copy; 2019-2020</span>
             </el-row>
             <el-row>
-                <a href="https://github.com/ix64/unlock-music/issues/new" target="_blank"><el-button icon="el-icon-s-promotion" size="mini" round type="primary" round>意见反馈</el-button></a> <a href="https://github.com/ix64/unlock-music" target="_blank"><el-button icon="el-icon-receiving" size="mini" round type="warning" round>开放源代码</el-button></a>
+                <a href="https://github.com/ix64/unlock-music/issues/new" target="_blank"><el-button icon="el-icon-chat-line-square" size="mini" round type="primary" round>意见反馈</el-button></a> <a href="https://github.com/ix64/unlock-music" target="_blank"><el-button icon="el-icon-receiving" size="mini" round type="warning" round>开放源代码</el-button></a>
             </el-row>
         </el-footer>
     </el-container>
 
 </template>
+
+
+<script>
+    export default {
+        data() {
+            return {
+                confirm: false,
+            };
+        }
+    }
+</script>
+
+<script>
+    export default {
+        data() {
+            return {
+                radio: 'download_format',
+            };
+        }
+    }
+</script>
+
+<script>
+    export default {
+        data() {
+            return {
+                value: true
+            }
+        }
+    };
+</script>
 
 <script>
 
@@ -71,15 +122,15 @@
             finishLoad() {
                 const mask = document.getElementById("loader-mask");
                 if (!!mask) mask.remove();
-                    this.$notify.success({
-                        title: '欢迎使用',
-                        message: '最近更新内容：</br>' +
-                            '1. 优化UI</br>2. 新增 .wav .aac 支持',
-                        dangerouslyUseHTMLString: true,
-                        duration: 8000,
-                        position: 'top-left'
-                    });
-                }
+                this.$notify.success({
+                    title: '欢迎使用',
+                    message: '最近更新内容：</br>' +
+                        '1. 优化UI</br>2. 新增播放网络URL地址',
+                    dangerouslyUseHTMLString: true,
+                    duration: 8000,
+                    position: 'top-left'
+                });
+
             },
             showSuccess(data) {
                 if (data.status) {
@@ -138,6 +189,7 @@
         },
 
     }
+
 
 </script>
 

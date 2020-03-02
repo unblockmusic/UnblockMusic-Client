@@ -1,14 +1,13 @@
 <template>
-    <el-upload
-            :auto-upload="false"
-            :on-change="handleFile"
-            :show-file-list="false"
-            action=""
-            drag
-            multiple>
-        <i class="el-icon-upload"/>
+    <el-upload :auto-upload="false"
+               :on-change="handleFile"
+               :show-file-list="false"
+               action=""
+               drag
+               multiple>
+        <i class="el-icon-upload" />
         <div class="el-upload__text">将文件拖到此处，或<em>点击选择</em></div>
-        <div class="el-upload__tip" slot="tip">仅供学习与技术交流使用</div>
+        <div class="el-upload__tip" slot="tip" style="color:gray">播放本地文件</div>
     </el-upload>
 </template>
 
