@@ -2,17 +2,22 @@
 
     <el-container id="app">
         <el-main>
-            <x-upload v-on:handle_finish="showSuccess" v-on:handle_error="showFail"></x-upload>
+            <x-upload v-on:handle_error="showFail" v-on:handle_finish="showSuccess"></x-upload>
 
             <el-row id="app-control">
                 <el-row>
-                    <el-input style="width:360px;" placeholder="URL" v-model="playing_url" clearable prefix-icon="el-icon-link" autosize></el-input>
+                    <el-input style="width:290px" placeholder="URL" v-model="input" clearable prefix-icon="el-icon-link"></el-input>
+                    <el-button @click="playing_url = input" style="margin-left: 1em"
+                               circle icon="el-icon-caret-right" type="primary" size="mini">
+                    </el-button>
+                    <el-button @click="playing_url = none; input = none"
+                               style="margin-left: 0.5em" circle icon="el-icon-switch-button" type="danger" size="mini">
+                    </el-button>
                 </el-row>
-                <el-row style="font-size:12px;color:gray;padding-bottom: 2em;padding-top:0.6em">
+                <el-row style="font-size:12px;color:gray;padding-bottom: 2em;padding-top:0.8em">
                     播放URL地址
                 </el-row>
                 <el-row style="padding-bottom: 1em; font-size: 13px">
-                    下载格式：
                     <el-radio-group v-model="download_format" name="format" size="small">
                         <el-radio-button label="1">原文件</el-radio-button>
                         <el-radio-button label="4">歌手 - 歌曲名</el-radio-button>
@@ -21,55 +26,42 @@
                     </el-radio-group>
                 </el-row>
                 <el-row>
-                    <el-button @click="handleDownloadAll" icon="el-icon-download" plain type="primary">下载全部</el-button>
-                    <el-popover placement="bottom"
+                    <el-button @click="handleDownloadAll" icon="el-icon-download" plain type="success">保存全部</el-button>
+                    <el-popover placement="top"
+                                trigger="hover"
                                 width="160"
-                                v-model="confirm">
+                                v-model="visible">
                         <p>移除所有导入的文件吗？</p>
                         <div style="text-align: right; margin: 0">
-                            <el-button size="mini" type="text" @click="confirm = false">取消</el-button>
                             <el-button type="danger" size="mini" @click="handleDeleteAll">确定</el-button>
                         </div>
                         <el-button style="margin-left: 1em" slot="reference" icon="el-icon-delete" plain type="danger">删除全部</el-button>
                     </el-popover>
-                    <el-switch style="margin-left: 1em" v-model="instant_download"
-                               active-color="#13ce66"
-                               active-text="立即保存">
-                    </el-switch>
+                    <el-checkbox style="margin-left: 1em" v-model="instant_download" label="立即保存" border></el-checkbox>
                 </el-row>
             </el-row>
-            <audio :autoplay="playing_auto" :src="playing_url" controls></audio>
+            <audio :id="player" :autoplay="playing_auto" :src="playing_url" controls></audio>
 
-            <x-preview :table-data="tableData" :download_format="download_format"
+            <x-preview :download_format="download_format" :table-data="tableData"
                        v-on:music_changed="changePlaying"></x-preview>
 
         </el-main>
         <el-footer id="app-footer">
             <el-row style="padding-bottom: 0.2em; font-size:14px">
-                当前版本：<span v-text="version"></span>
+                版本：<span v-text="version"></span>
             </el-row>
-            <el-row style="padding-bottom: 0.5em;">
+            <el-row style="padding-bottom: 1em;">
                 <span>Copyright &copy; 2019-2020</span>
             </el-row>
             <el-row>
-                <a href="https://github.com/ix64/unlock-music/issues/new" target="_blank"><el-button icon="el-icon-chat-line-square" size="mini" round type="primary" round>意见反馈</el-button></a> <a href="https://github.com/ix64/unlock-music" target="_blank"><el-button icon="el-icon-receiving" size="mini" round type="warning" round>开放源代码</el-button></a>
+                <a href="https://github.com/unblockmusic/unblockmusic.github.io/issues/new" target="_blank"><el-button icon="el-icon-chat-line-square" size="mini" round type="primary">意见反馈</el-button></a> <a href="https://github.com/ix64/unlock-music" target="_blank"><el-button icon="el-icon-receiving" size="mini" round type="warning">开放源代码</el-button></a>
             </el-row>
         </el-footer>
     </el-container>
 
 </template>
 
-
-<script>
-    export default {
-        data() {
-            return {
-                confirm: false,
-            };
-        }
-    }
-</script>
-
+s
 <script>
     export default {
         data() {
@@ -84,7 +76,7 @@
     export default {
         data() {
             return {
-                value: true
+                value: true,
             }
         }
     };
@@ -108,9 +100,11 @@
                 activeIndex: '1',
                 tableData: [],
                 playing_url: "",
-                playing_auto: false,
+                playing_auto: true,
                 download_format: '1',
                 instant_download: false,
+                input: "",
+                none: "",
             }
         },
         created() {
@@ -124,8 +118,7 @@
                 if (!!mask) mask.remove();
                 this.$notify.success({
                     title: '欢迎使用',
-                    message: '最近更新内容：</br>' +
-                        '1. 优化UI</br>2. 新增播放网络URL地址',
+                    message: '最近更新内容：</br>' + config.updateInfo,
                     dangerouslyUseHTMLString: true,
                     duration: 8000,
                     position: 'top-left'
@@ -162,8 +155,8 @@
                 });
                 if (process.env.NODE_ENV === 'production') {
                     window._paq.push(["trackEvent", "Error", errInfo, filename]);
-                    console.error(errInfo, filename);
                 }
+                    console.error(errInfo, filename);
             },
             changePlaying(url) {
                 this.playing_url = url;
@@ -174,7 +167,9 @@
                     RemoveBlobMusic(value);
                 });
                 this.tableData = [];
+                this.playing_url = [];
             },
+
             handleDownloadAll() {
                 let index = 0;
                 let c = setInterval(() => {
