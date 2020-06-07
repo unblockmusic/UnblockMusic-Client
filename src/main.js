@@ -3,10 +3,10 @@ import App from './App.vue'
 import './registerServiceWorker'
 import {
     Button, Col, Container, Footer, Icon, Image, Link, Main,
-    Row, Table, TableColumn, Upload, Radio, RadioGroup, RadioButton, Checkbox, Switch,
-    Notification, Popover, Input
+    Row, Table, TableColumn, Upload, Radio, RadioGroup, RadioButton, Checkbox, Progress, Switch,
+    Notification, Popover, Input, Tooltip,
 } from 'element-ui';
-import 'element-ui/lib/theme-chalk/index.css'
+import 'element-ui/lib/theme-chalk/base.css';
 
 Vue.use(Link);
 Vue.use(Image);
@@ -25,6 +25,8 @@ Vue.use(Col);
 Vue.use(Upload);
 Vue.use(Checkbox);
 Vue.use(Radio);
+Vue.use(Tooltip);
+Vue.use(Progress);
 Vue.use(Popover);
 Vue.use(Input);
 Vue.prototype.$notify = Notification;

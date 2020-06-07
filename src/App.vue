@@ -4,7 +4,7 @@
         <el-main>
             <x-upload v-on:handle_error="showFail" v-on:handle_finish="showSuccess"></x-upload>
 
-            <el-row id="app-control">
+            <div id="app-control">
                 <el-row>
                     <el-input style="width:290px" placeholder="URL" v-model="input" clearable prefix-icon="el-icon-link"></el-input>
                     <el-button @click="playing_url = input" style="margin-left: 1em"
@@ -19,7 +19,7 @@
                 </el-row>
                 <el-row style="padding-bottom: 1em; font-size: 13px">
                     <el-radio-group v-model="download_format" name="format" size="small">
-                        <el-radio-button label="1">原文件</el-radio-button>
+                        <el-radio-button label="1">原文件名</el-radio-button>
                         <el-radio-button label="4">歌手 - 歌曲名</el-radio-button>
                         <el-radio-button label="2">歌曲名 - 歌手</el-radio-button>
                         <el-radio-button label="3">歌曲名</el-radio-button>
@@ -35,11 +35,17 @@
                         <div style="text-align: right; margin: 0">
                             <el-button type="danger" size="mini" @click="handleDeleteAll">确定</el-button>
                         </div>
-                        <el-button style="margin-left: 1em" slot="reference" icon="el-icon-delete" plain type="danger">删除全部</el-button>
+                    <el-button style="margin-left: 1em" slot="reference" icon="el-icon-delete" plain type="danger">移除全部</el-button>
                     </el-popover>
-                    <el-checkbox style="margin-left: 1em" v-model="instant_download" label="立即保存" border></el-checkbox>
+                    <el-tooltip class="item" effect="dark" placement="top-start">
+                        <div slot="content">
+                            批量导入时建议开启此选项。<br />
+                            开启后，可防止内存不足。
+                        </div>
+                        <el-checkbox border style="margin-left: 1em" v-model="instant_download">立即保存</el-checkbox>
+                    </el-tooltip>
                 </el-row>
-            </el-row>
+            </div>
             <audio :id="player" :autoplay="playing_auto" :src="playing_url" controls></audio>
 
             <x-preview :download_format="download_format" :table-data="tableData"
@@ -51,7 +57,7 @@
                 版本：<span v-text="version"></span>
             </el-row>
             <el-row style="padding-bottom: 1em;">
-                <span>Copyright &copy; 2019-2020</span>
+                <span>Copyright &copy; 2019-</span><span v-text="(new Date()).getFullYear()"></span>
             </el-row>
             <el-row>
                 <a href="https://github.com/unblockmusic/unblockmusic.github.io/issues/new" target="_blank"><el-button icon="el-icon-chat-line-square" size="mini" round type="primary">意见反馈</el-button></a> <a href="https://github.com/ix64/unlock-music" target="_blank"><el-button icon="el-icon-receiving" size="mini" round type="warning">开放源代码</el-button></a>
@@ -118,12 +124,11 @@ s
                 if (!!mask) mask.remove();
                 this.$notify.success({
                     title: '欢迎使用',
-                    message: '最近更新内容：</br>' + config.updateInfo,
+                    message: '最近更新内容&nbsp;' + '(' + config.updateDate + ')' + '：</br>' + config.updateInfo,
                     dangerouslyUseHTMLString: true,
                     duration: 8000,
                     position: 'top-left'
                 });
-
             },
             showSuccess(data) {
                 if (data.status) {

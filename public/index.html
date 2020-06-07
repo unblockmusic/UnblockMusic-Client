@@ -8,11 +8,7 @@
     <meta content="webkit" name="renderer">
     <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
     <meta content="width=device-width,initial-scale=1.0" name="viewport">
-    <!--@formatter:off-->
-    <script>var _paq = window._paq || []; _paq.push(["setRequestMethod", "POST"], ["trackPageView"], ["enableLinkTracking"], ["setSiteId", "2"], ["setTrackerUrl", "https://stats.ixarea.com/ixarea-stats/report"]);</script>
-    <!--@formatter:on-->
     <title>音乐播放器</title>
-    <!--@formatter:off-->
     <style>
         #loader {
             position: absolute;
@@ -83,12 +79,12 @@
             var m;
             if (!ua) return true;
             if (/MSIE |Trident\//.exec(ua)) return true; // no IE
-            m = /Edge\/([\d.]+)/.exec(ua); // Edge >= 16
-            if (m && Number(m[1]) < 16) return true;
-            m = /Chrome\/([\d.]+)/.exec(ua); // Chrome >= 50
-            if (m && Number(m[1]) < 50) return true;
-            m = /Firefox\/([\d.]+)/.exec(ua); // Firefox >= 38
-            return m && Number(m[1]) < 38;
+            m = /Edge\/([\d.]+)/.exec(ua); // Edge >= 17
+            if (m && Number(m[1]) < 17) return true;
+            m = /Chrome\/([\d.]+)/.exec(ua); // Chrome >= 58
+            if (m && Number(m[1]) < 58) return true;
+            m = /Firefox\/([\d.]+)/.exec(ua); // Firefox >= 45
+            return m && Number(m[1]) < 45;
         })();
         if (detected) {
             document.getElementById('loader-tips-outdated').hidden = false;

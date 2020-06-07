@@ -1,8 +1,7 @@
 const CryptoJS = require("crypto-js");
-const ID3Writer = require("browser-id3-writer");
 const CORE_KEY = CryptoJS.enc.Hex.parse("687a4852416d736f356b496e62617857");
 const META_KEY = CryptoJS.enc.Hex.parse("2331346C6A6B5F215C5D2630553C2728");
-import { AudioMimeType, DetectAudioExt, GetArrayBuffer, GetFileInfo } from "./util"
+import { AudioMimeType, DetectAudioExt, GetArrayBuffer, GetFileInfo, GetWebImage, WriteMp3Meta } from "./util"
 
 export async function Decrypt(file, raw_filename, raw_ext) {
     const fileBuffer = await GetArrayBuffer(file);
@@ -20,7 +19,8 @@ export async function Decrypt(file, raw_filename, raw_ext) {
     let audioOffset = musicMetaObj.offset + dataView.getUint32(musicMetaObj.offset + 5, true) + 13;
     let audioData = new Uint8Array(fileBuffer, audioOffset);
 
-    for (let cur = 0; cur < audioData.length; ++cur) audioData[cur] ^= keyBox[cur & 0xff];
+    let lenAudioData = audioData.length;
+    for (let cur = 0; cur < lenAudioData; ++cur) audioData[cur] ^= keyBox[cur & 0xff];
 
 
     if (musicMeta.album === undefined) musicMeta.album = "";
@@ -31,8 +31,10 @@ export async function Decrypt(file, raw_filename, raw_ext) {
     if (artists.length === 0) artists.push(info.artist);
 
     if (musicMeta.format === undefined) musicMeta.format = DetectAudioExt(audioData, "mp3");
-    if (musicMeta.format === "mp3")
-        audioData = await writeID3(audioData, artists, info.title, musicMeta.album, musicMeta.albumPic);
+
+    const imageInfo = await GetWebImage(musicMeta.albumPic);
+    if (musicMeta.format === "mp3") audioData = await WriteMp3Meta(
+        audioData, artists, info.title, musicMeta.album, imageInfo.buffer, musicMeta.albumPic);
 
     const mime = AudioMimeType[musicMeta.format];
     const musicData = new Blob([audioData], { type: mime });
@@ -42,32 +44,12 @@ export async function Decrypt(file, raw_filename, raw_ext) {
         artist: info.artist,
         ext: musicMeta.format,
         album: musicMeta.album,
-        picture: musicMeta.albumPic,
+        picture: imageInfo.url,
         file: URL.createObjectURL(musicData),
         mime: mime
     };
 }
 
-async function writeID3(audioData, artistList, title, album, picture) {
-    const writer = new ID3Writer(audioData);
-    writer.setFrame("TPE1", artistList)
-        .setFrame("TIT2", title)
-        .setFrame("TALB", album);
-    if (picture !== "") {
-        try {
-            const img = await (await fetch(picture)).arrayBuffer();
-            writer.setFrame('APIC', {
-                type: 3,
-                data: img,
-                description: 'Cover'
-            })
-        } catch (e) {
-            console.log("Fail to write cover image!");
-        }
-    }
-    writer.addTag();
-    return writer.arrayBuffer;
-}
 
 function getKeyData(dataView, fileBuffer, offset) {
     const keyLen = dataView.getUint32(offset, true);
