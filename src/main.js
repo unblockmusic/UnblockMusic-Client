@@ -30,9 +30,9 @@ Vue.use(Progress);
 Vue.use(Popover);
 Vue.use(Input);
 Vue.prototype.$notify = Notification;
-
 Vue.config.productionTip = false;
 
+document.getElementById("loader-source").remove()
 new Vue({
     render: h => h(App),
 }).$mount('#app');

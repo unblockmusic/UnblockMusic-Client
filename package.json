@@ -1,8 +1,8 @@
 {
   "name": "unlock-music",
-  "version": "1.5.1",
-  "updateInfo": "1.新增qmc2支持</br>2.新增导入进度条</br>3.修复专辑封面问题</br>4.新增酷我(.kwm)、虾米(.xm)格式支持",
-  "updateDate": "2020.5.1",
+  "version": "1.5.2",
+  "updateInfo": "改善.mgg解锁算法",
+  "updateDate": "2020.6.13",
   "license": "MIT",
   "description": "Unlock encrypted music file in browser.",
   "repository": {
@@ -33,6 +33,6 @@
     "babel-plugin-component": "^1.1.1",
     "vue-cli-plugin-element": "^1.0.1",
     "vue-template-compiler": "^2.6.11",
-    "workerize-loader": "^1.1.0"
+    "workerize-loader": "^1.2.1"
   }
 }
