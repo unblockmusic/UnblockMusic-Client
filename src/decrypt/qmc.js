@@ -31,7 +31,6 @@ export async function Decrypt(file, raw_filename, raw_ext) {
         audioData = fileData.slice(0, keyPos);
         seed = handler.handler(audioData);
         keyData = fileData.slice(keyPos, keyPos + keyLen);
-        if (seed === undefined) seed = await queryKeyInfo(keyData, raw_filename, raw_ext);
         if (seed === undefined) return {status: false, message: raw_ext + "格式仅提供实验性支持"};
     } else {
         audioData = fileData;
@@ -54,8 +53,6 @@ export async function Decrypt(file, raw_filename, raw_ext) {
     }
 
     const info = GetFileInfo(musicMeta.common.artist, musicMeta.common.title, raw_filename);
-    if (handler.detect) reportKeyUsage(keyData, seed.Matrix128,
-        info.artist, info.title, musicMeta.common.album, raw_filename, raw_ext);
 
     let imgUrl = GetMetaCoverURL(musicMeta);
     if (imgUrl === "") {

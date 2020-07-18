@@ -1,14 +1,9 @@
 {
   "name": "unlock-music",
   "version": "1.5.2",
-  "updateInfo": "改善.mgg解锁算法",
-  "updateDate": "2020.6.13",
-  "license": "MIT",
+  "updateInfo": "新增.kgm格式支持",
+  "updateDate": "2020.7.18",
   "description": "Unlock encrypted music file in browser.",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/ix64/unlock-music"
-  },
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -27,12 +22,12 @@
     "vue": "^2.6.11"
   },
   "devDependencies": {
-    "@vue/cli-plugin-babel": "^4.3.0",
-    "@vue/cli-plugin-pwa": "^4.3.0",
-    "@vue/cli-service": "^4.3.0",
+    "@vue/cli-plugin-babel": "^4.4.6",
+    "@vue/cli-plugin-pwa": "^4.4.6",
+    "@vue/cli-service": "^4.4.6",
     "babel-plugin-component": "^1.1.1",
     "vue-cli-plugin-element": "^1.0.1",
     "vue-template-compiler": "^2.6.11",
-    "workerize-loader": "^1.2.1"
+    "workerize-loader": "^1.3.0"
   }
 }
