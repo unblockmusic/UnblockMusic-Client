@@ -60,7 +60,7 @@
                 <span>Copyright &copy; 2019-</span><span v-text="(new Date()).getFullYear()"></span>
             </el-row>
             <el-row>
-                <a href="https://github.com/unblockmusic/unblockmusic.github.io/issues/new" target="_blank"><el-button icon="el-icon-chat-line-square" size="mini" round type="primary">意见反馈</el-button></a> <a href="https://github.com/ix64/unlock-music" target="_blank"><el-button icon="el-icon-receiving" size="mini" round type="warning">开放源代码</el-button></a>
+                <a href="https://github.com/ix64/unlock-music/issues/new" target="_blank"><el-button icon="el-icon-chat-line-square" size="mini" round type="primary">意见反馈</el-button></a> <a href="https://github.com/ix64/unlock-music" target="_blank"><el-button icon="el-icon-receiving" size="mini" round type="warning">开放源代码</el-button></a>
             </el-row>
         </el-footer>
     </el-container>

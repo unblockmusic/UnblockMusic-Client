@@ -29,7 +29,7 @@ export async function Decrypt(file, raw_filename, raw_ext) {
     if (audioData.byteLength > 1 << 26) {
         return {
             status: false,
-            message: "文件过大，暂时无法播放"
+            message: "文件过大，请使用<a target='_blank' href='https://github.com/ix64/unlock-music/wiki/其他音乐格式工具'>CLI版本</a>进行解锁"
         }
     }
 

@@ -1,7 +1,7 @@
 {
   "name": "unlock-music",
-  "version": "1.5.2",
-  "updateInfo": "新增.kgm格式支持",
+  "version": "1.6.0",
+  "updateInfo": "1.新增.kgm格式支持</br>2.增加对flac文件的meta写入</br>3,支持QQ音乐封面写入（实验性）",
   "updateDate": "2020.7.18",
   "description": "Unlock encrypted music file in browser.",
   "private": true,
@@ -17,6 +17,7 @@
     "crypto-js": "^4.0.0",
     "element-ui": "^2.13.0",
     "iconv-lite": "^0.5.1",
+    "metaflac-js": "^1.0.5",
     "music-metadata-browser": "^2.0.5",
     "register-service-worker": "^1.7.1",
     "vue": "^2.6.11"

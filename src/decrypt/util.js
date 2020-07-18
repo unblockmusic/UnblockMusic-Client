@@ -7,6 +7,7 @@ export const WMA_HEADER = [
     0x30, 0x26, 0xB2, 0x75, 0x8E, 0x66, 0xCF, 0x11,
     0xA6, 0xD9, 0x00, 0xAA, 0x00, 0x62, 0xCE, 0x6C,
 ]
+export const WAV_HEADER = [0x52, 0x49, 0x46, 0x46]
 export const AudioMimeType = {
     mp3: "audio/mpeg",
     flac: "audio/flac",
@@ -15,6 +16,7 @@ export const AudioMimeType = {
     wma: "audio/x-ms-wma",
     wav: "audio/x-wav"
 };
+export const IXAREA_API_ENDPOINT = "https://stats.ixarea.com/apis"
 
 // Also a new draft API: blob.arrayBuffer()
 export async function GetArrayBuffer(blobObject) {
@@ -81,16 +83,16 @@ export async function GetWebImage(pic_url) {
         let mime = resp.headers.get("Content-Type");
         if (mime.startsWith("image/")) {
             let buf = await resp.arrayBuffer();
-            let objBlob = new Blob([buf], { type: mime });
+            let objBlob = new Blob([buf], {type: mime});
             let objUrl = URL.createObjectURL(objBlob);
-            return { "buffer": buf, "url": objUrl, "type": mime };
+            return {"buffer": buf, "url": objUrl, "type": mime};
         }
     } catch (e) {
     }
-    return { "buffer": null, "url": "", "type": "" }
+    return {"buffer": null, "url": "", "type": ""}
 }
 
-export async function WriteMp3Meta(audioData, artistList, title, album, pictureData = null, pictureDesc = "Cover") {
+export function WriteMp3Meta(audioData, artistList, title, album, pictureData = null, pictureDesc = "Cover") {
     const writer = new ID3Writer(audioData);
     writer.setFrame("TPE1", artistList)
         .setFrame("TIT2", title)

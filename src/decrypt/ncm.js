@@ -1,4 +1,5 @@
 const CryptoJS = require("crypto-js");
+const MetaFlac = require('metaflac-js');
 const CORE_KEY = CryptoJS.enc.Hex.parse("687a4852416d736f356b496e62617857");
 const META_KEY = CryptoJS.enc.Hex.parse("2331346C6A6B5F215C5D2630553C2728");
 const MagicHeader = [0x43, 0x54, 0x45, 0x4E, 0x46, 0x44, 0x41, 0x4D];
@@ -16,10 +17,8 @@ export async function Decrypt(file, raw_filename, raw_ext) {
     const fileBuffer = await GetArrayBuffer(file);
     const dataView = new DataView(fileBuffer);
 
-    if (dataView.getUint32(0, true) !== 0x4e455443 ||
-        dataView.getUint32(4, true) !== 0x4d414446)
     if (!IsBytesEqual(MagicHeader, new Uint8Array(fileBuffer, 0, 8)))
-        return { status: false, message: "此ncm文件已损坏" };
+        return {status: false, message: "此ncm文件已损坏"};
 
     const keyDataObj = getKeyData(dataView, fileBuffer, 10);
     const keyBox = getKeyBox(keyDataObj.data);
@@ -42,12 +41,23 @@ export async function Decrypt(file, raw_filename, raw_ext) {
     if (musicMeta.format === undefined) musicMeta.format = DetectAudioExt(audioData, "mp3");
 
     const imageInfo = await GetWebImage(musicMeta.albumPic);
-    if (musicMeta.format === "mp3") audioData = await WriteMp3Meta(
-        audioData, artists, info.title, musicMeta.album, imageInfo.buffer, musicMeta.albumPic);
+    if (musicMeta.format === "mp3") {
+        audioData = await WriteMp3Meta(
+            audioData, artists, info.title, musicMeta.album, imageInfo.buffer, musicMeta.albumPic);
+    } else if (musicMeta.format === "flac") {
+        const writer = new MetaFlac(Buffer.from(audioData))
+        writer.setTag("TITLE=" + info.title);
+        writer.setTag("ALBUM=" + musicMeta.album);
+        artists.forEach(artist => writer.setTag("ARTIST=" + artist));
+        writer.importPictureFromBuffer(Buffer.from(imageInfo.buffer))
+        audioData = writer.save()
+    }
+    console.log(imageInfo)
 
     const mime = AudioMimeType[musicMeta.format];
-    const musicData = new Blob([audioData], { type: mime });
-    return {
+    const musicData = new Blob([audioData], {type: mime});
+
+    let x = {
         status: true,
         title: info.title,
         artist: info.artist,
@@ -57,6 +67,8 @@ export async function Decrypt(file, raw_filename, raw_ext) {
         file: URL.createObjectURL(musicData),
         mime: mime
     };
+    console.log(x)
+    return x;
 }
 
 
@@ -69,7 +81,7 @@ function getKeyData(dataView, fileBuffer, offset) {
     offset += keyLen;
 
     const plainText = CryptoJS.AES.decrypt(
-        { ciphertext: CryptoJS.lib.WordArray.create(cipherText) },
+        {ciphertext: CryptoJS.lib.WordArray.create(cipherText)},
         CORE_KEY,
         {
             mode: CryptoJS.mode.ECB,
@@ -85,7 +97,7 @@ function getKeyData(dataView, fileBuffer, offset) {
         result[i] = (words[i >>> 2] >>> (24 - (i % 4) * 8)) & 0xff;
     }
 
-    return { offset: offset, data: result.slice(17) };
+    return {offset: offset, data: result.slice(17)};
 }
 
 function getKeyBox(keyData) {
@@ -121,7 +133,7 @@ function getKeyBox(keyData) {
 function getMetaData(dataView, fileBuffer, offset) {
     const metaDataLen = dataView.getUint32(offset, true);
     offset += 4;
-    if (metaDataLen === 0) return { data: {}, offset: offset };
+    if (metaDataLen === 0) return {data: {}, offset: offset};
 
     const cipherText = new Uint8Array(fileBuffer, offset, metaDataLen).map(
         data => data ^ 0x63
@@ -129,12 +141,12 @@ function getMetaData(dataView, fileBuffer, offset) {
     offset += metaDataLen;
 
     const plainText = CryptoJS.AES.decrypt({
-        ciphertext: CryptoJS.enc.Base64.parse(
-            CryptoJS.lib.WordArray.create(cipherText.slice(22)).toString(CryptoJS.enc.Utf8)
-        )
-    },
+            ciphertext: CryptoJS.enc.Base64.parse(
+                CryptoJS.lib.WordArray.create(cipherText.slice(22)).toString(CryptoJS.enc.Utf8)
+            )
+        },
         META_KEY,
-        { mode: CryptoJS.mode.ECB, padding: CryptoJS.pad.Pkcs7 }
+        {mode: CryptoJS.mode.ECB, padding: CryptoJS.pad.Pkcs7}
     ).toString(CryptoJS.enc.Utf8);
     const labelIndex = plainText.indexOf(":");
     let result = JSON.parse(plainText.slice(labelIndex + 1));
@@ -142,5 +154,7 @@ function getMetaData(dataView, fileBuffer, offset) {
         result = result.mainMusic;
     }
     if (!!result.albumPic) result.albumPic = result.albumPic.replace("http://", "https://");
-    return { data: result, offset: offset };
+    return {data: result, offset: offset};
 }
+
+
