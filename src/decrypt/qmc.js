@@ -60,6 +60,7 @@ export async function Decrypt(file, raw_filename, raw_ext) {
     const musicMeta = await musicMetadata.parseBlob(musicBlob);
     for (let metaIdx in musicMeta.native) {
         if (musicMeta.native[metaIdx].some(item => item.id === "TCON" && item.value === "(12)")) {
+            console.warn("The metadata is using gbk encoding")
             musicMeta.common.artist = decode(musicMeta.common.artist, "gbk");
             musicMeta.common.title = decode(musicMeta.common.title, "gbk");
             musicMeta.common.album = decode(musicMeta.common.album, "gbk");
@@ -67,6 +68,8 @@ export async function Decrypt(file, raw_filename, raw_ext) {
     }
 
     const info = GetFileInfo(musicMeta.common.artist, musicMeta.common.title, raw_filename);
+    if (handler.detect) reportKeyUsage(keyData, seed.Matrix128,
+        info.artist, info.title, musicMeta.common.album, raw_filename, raw_ext);
 
     let imgUrl = GetMetaCoverURL(musicMeta);
     if (imgUrl === "") {
@@ -75,21 +78,25 @@ export async function Decrypt(file, raw_filename, raw_ext) {
             const imageInfo = await GetWebImage(imgUrl);
             if (imageInfo.url !== "") {
                 imgUrl = imageInfo.url
-                if (ext === "mp3") {
-                    let writer = new ID3Writer(musicDecoded)
-                    writer.setFrame('APIC', {
-                        type: 3,
-                        data: imageInfo.buffer,
-                        description: "Cover",
-                    })
-                    writer.addTag();
-                    musicDecoded = writer.arrayBuffer
-                    musicBlob = new Blob([musicDecoded], {type: mime});
-                } else if (ext === 'flac') {
-                    const writer = new MetaFlac(Buffer.from(musicDecoded))
-                    writer.importPictureFromBuffer(Buffer.from(imageInfo.buffer))
-                    musicDecoded = writer.save()
-                    musicBlob = new Blob([musicDecoded], {type: mime});
+                try {
+                    if (ext === "mp3") {
+                        let writer = new ID3Writer(musicDecoded)
+                        writer.setFrame('APIC', {
+                            type: 3,
+                            data: imageInfo.buffer,
+                            description: "Cover",
+                        })
+                        writer.addTag();
+                        musicDecoded = writer.arrayBuffer
+                        musicBlob = new Blob([musicDecoded], {type: mime});
+                    } else if (ext === 'flac') {
+                        const writer = new MetaFlac(Buffer.from(musicDecoded))
+                        writer.importPictureFromBuffer(Buffer.from(imageInfo.buffer))
+                        musicDecoded = writer.save()
+                        musicBlob = new Blob([musicDecoded], {type: mime});
+                    }
+                } catch (e) {
+                    console.warn("Error while appending cover image to file " + e)
                 }
             }
         }
@@ -103,6 +110,31 @@ export async function Decrypt(file, raw_filename, raw_ext) {
         picture: imgUrl,
         file: URL.createObjectURL(musicBlob),
         mime: mime
+    }
+}
+
+function reportKeyUsage(keyData, maskData, artist, title, album, filename, format) {
+    fetch(IXAREA_API_ENDPOINT + "/qmcmask/usage", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+            Mask: Base64Encode(new Uint8Array(maskData)), Key: Base64Encode(keyData),
+            Artist: artist, Title: title, Album: album, Filename: filename, Format: format
+        }),
+    }).then().catch()
+}
+
+async function queryKeyInfo(keyData, filename, format) {
+    try {
+        const resp = await fetch(IXAREA_API_ENDPOINT + "/qmcmask/query", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({Format: format, Key: Base64Encode(keyData), Filename: filename, Type: 44}),
+        });
+        let data = await resp.json();
+        return QmcMaskCreate58(Base64Decode(data.Matrix44));
+    } catch (e) {
+        console.log(e);
     }
 }
 

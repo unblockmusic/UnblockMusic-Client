@@ -28,13 +28,13 @@
         <el-table-column label="操作">
             <template slot-scope="scope">
                 <el-button @click="handlePlay(scope.$index, scope.row)"
-                           circle icon="el-icon-caret-right" type="primary">
+                           circle icon="el-icon-video-play" type="success">
                 </el-button>
                 <el-button @click="handleDownload(scope.row)"
-                           circle icon="el-icon-download" type="success">
+                           circle icon="el-icon-download">
                 </el-button>
                 <el-button @click="handleDelete(scope.$index, scope.row)"
-                           circle icon="el-icon-close" type="danger">
+                           circle icon="el-icon-delete" type="danger">
                 </el-button>
             </template>
         </el-table-column>

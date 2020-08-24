@@ -1,18 +1,21 @@
 <template>
-    <el-upload :auto-upload="false"
-               :on-change="handleFile"
-               :show-file-list="false"
-               action=""
-               drag
-               multiple>
-        <i class="el-icon-upload" />
+    <el-upload
+            :auto-upload="false"
+            :on-change="handleFile"
+            :show-file-list="false"
+            action=""
+            drag
+            multiple>
+        <i class="el-icon-upload"/>
         <div class="el-upload__text">将文件拖到此处，或<em>点击选择</em></div>
+        <div class="el-upload__tip" slot="tip">本工具仅在浏览器内对文件进行解锁，无需消耗流量</div>
         <transition name="el-fade-in">
-            <el-progress :format="progressFormat" :percentage="progress_percent" :stroke-width="16"
-                         :text-inside="true" style="margin: 16px 6px 0 6px"
-                         v-show="progress_show"></el-progress>
+            <el-progress
+                    :format="progressFormat" :percentage="progress_percent" :stroke-width="16"
+                    :text-inside="true" style="margin: 16px 6px 0 6px"
+                    v-show="progress_show"
+            ></el-progress>
         </transition>
-        <div class="el-upload__tip" slot="tip" style="color:gray">播放音频文件</div>
     </el-upload>
 </template>
 
@@ -27,7 +30,9 @@
                 workers: [],
                 idle_workers: [],
                 thread_num: 1,
+
                 progress_show: false,
+
                 progress_finished: 0,
                 progress_all: 0,
                 progress_percent: 0,

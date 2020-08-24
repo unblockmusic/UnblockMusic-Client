@@ -19,10 +19,10 @@
                 </el-row>
                 <el-row style="padding-bottom: 1em; font-size: 13px">
                     <el-radio-group v-model="download_format" name="format" size="small">
-                        <el-radio-button label="1">原文件名</el-radio-button>
-                        <el-radio-button label="4">歌手 - 歌曲名</el-radio-button>
-                        <el-radio-button label="2">歌曲名 - 歌手</el-radio-button>
-                        <el-radio-button label="3">歌曲名</el-radio-button>
+                        <el-radio-button label="4">原文件名</el-radio-button>
+                        <el-radio-button label="1">歌手 - 歌曲名</el-radio-button>
+                        <el-radio-button label="3">歌曲名 - 歌手</el-radio-button>
+                        <el-radio-button label="2">歌曲名</el-radio-button>
                     </el-radio-group>
                 </el-row>
                 <el-row>

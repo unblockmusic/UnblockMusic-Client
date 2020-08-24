@@ -1,4 +1,4 @@
-import {AudioMimeType, DetectAudioExt, GetArrayBuffer, GetFileInfo, GetMetaCoverURL, IsBytesEqual} from "./util";
+import {AudioMimeType, GetArrayBuffer, GetFileInfo, GetMetaCoverURL, IsBytesEqual} from "./util";
 
 import {Decrypt as RawDecrypt} from "./raw";
 
@@ -29,13 +29,13 @@ export async function Decrypt(file, raw_filename, raw_ext) {
     }
 
     let key = oriData[0xf]
-    let dataOffset = oriData[0xc] | oriData[0xd] << 8
+    let dataOffset = oriData[0xc] | oriData[0xd] << 8 | oriData[0xe] << 16
     let audioData = oriData.slice(0x10);
     let lenAudioData = audioData.length;
     for (let cur = dataOffset; cur < lenAudioData; ++cur)
         audioData[cur] = (audioData[cur] - key) ^ 0xff;
 
-    const ext = DetectAudioExt(audioData, "mp3");
+    const ext = FileTypeMap[typeText];
     const mime = AudioMimeType[ext];
     let musicBlob = new Blob([audioData], {type: mime});
 
@@ -46,8 +46,8 @@ export async function Decrypt(file, raw_filename, raw_ext) {
         musicMeta.common.artist = "";
         musicMeta.common.title = "";
     }
-
-    const info = GetFileInfo(musicMeta.common.artist, musicMeta.common.title, raw_filename, "_");
+    let _sep = raw_filename.indexof("_") === -1 ? "-" : "_"
+    const info = GetFileInfo(musicMeta.common.artist, musicMeta.common.title, raw_filename, _sep);
 
     const imgUrl = GetMetaCoverURL(musicMeta);
 
