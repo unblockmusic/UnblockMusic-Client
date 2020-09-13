@@ -28,7 +28,7 @@
         <el-table-column label="操作">
             <template slot-scope="scope">
                 <el-button @click="handlePlay(scope.$index, scope.row)"
-                           circle icon="el-icon-video-play" type="success">
+                           circle icon="el-icon-caret-right" type="success">
                 </el-button>
                 <el-button @click="handleDownload(scope.row)"
                            circle icon="el-icon-download">

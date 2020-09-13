@@ -13,6 +13,7 @@ import {
     Image,
     Link,
     Main,
+    Message,
     Notification,
     Progress,
     Popover,
@@ -49,6 +50,7 @@ Vue.use(Tooltip);
 Vue.use(Progress);
 Vue.use(Popover);
 Vue.prototype.$notify = Notification;
+Vue.prototype.$notice = Notification;
 
 Vue.config.productionTip = false;
 document.getElementById("loader-source").remove()

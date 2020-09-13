@@ -126,8 +126,8 @@ s
                     title: '欢迎使用',
                     message: '最近更新内容&nbsp;' + '(' + config.updateDate + ')' + '：</br>' + config.updateInfo,
                     dangerouslyUseHTMLString: true,
-                    duration: 8000,
-                    position: 'top-left'
+                    duration: 5000,
+                    position: 'top-left',
                 });
             },
             showSuccess(data) {
@@ -140,7 +140,13 @@ s
                         this.$notify.success({
                             title: '成功',
                             message: data.title,
-                            duration: 3000
+                            duration: 5000
+                        });
+                        this.$notice.warning({
+                            message: '请支持正版音乐',
+                            duration: 5000,
+                            showClose: false,
+                            offset: 80
                         });
                     }
                     if (process.env.NODE_ENV === 'production') {
